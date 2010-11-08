@@ -1,10 +1,4 @@
-// Shim to allow Clojure to be easily used with Hadoop.
-//
-// The structure of this was borrowed from one of the few good examples of a Hadoop 0.20 task:
-//     http://cxwangyi.blogspot.com/2009/12/wordcount-tutorial-for-hadoop-0201.html
-//
-// See http://www.brool.com/hadoop-shim-to-clojure for more details. 
-//
+// http://cxwangyi.blogspot.com/2009/12/wordcount-tutorial-for-hadoop-0201.html
 
 package com.brool;
         
@@ -108,7 +102,7 @@ public class Shim {
         String clojure_file = new File(tmpFiles[0]).getName();
         conf.set("clojure.file", clojure_file);
 
-        Job job = new Job(conf, otherArgs[0]);
+        Job job = new Job(conf, clojure_file);
         job.setJarByClass(Shim.class);
         job.setMapperClass(Map.class);
         job.setReducerClass(Reduce.class);
