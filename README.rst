@@ -3,7 +3,9 @@ Hadoop Shim
 
 A hacky way of writing quick Hadoop 0.20 tasks in Clojure.  This is
 just a tiny shim that takes a Clojure file with a "mapper" and
-"reducer" function and uses it as a Hadoop Map/Reduce task.
+"reducer" function and uses it as a Hadoop Map/Reduce task.  The
+advantage of using the shim is that there is no build / JAR step;  one
+JAR will work for any one-file Clojure Hadoop task.
 
 Getting The Jar
 ---------------
@@ -11,9 +13,6 @@ Getting The Jar
 The quickest way of downloading the .JAR is to just get it from:
 
     http://images.brool.com/blog/files/coding/shim.jar
-
-(If everyone reading this blog downloads it, it will be an extra 6M on
-the bandwidth this month!)
 
 Building The Jar 
 ----------------
