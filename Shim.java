@@ -1,4 +1,10 @@
-// http://cxwangyi.blogspot.com/2009/12/wordcount-tutorial-for-hadoop-0201.html
+// Shim to allow Clojure to be easily used with Hadoop.
+//
+// The structure of this was borrowed from one of the few good examples of a Hadoop 0.20 task:
+//     http://cxwangyi.blogspot.com/2009/12/wordcount-tutorial-for-hadoop-0201.html
+//
+// See http://www.brool.com/hadoop-shim-to-clojure for more details. 
+//
 
 package com.brool;
         
