@@ -84,9 +84,11 @@ public class Shim {
                 }
 
                 java.util.List<Object> lst = (java.util.List<Object>) reducefn.invoke(key.toString(), vals);
-                k.set(lst.get(0).toString());
-                v.set(lst.get(1).toString());
-                context.write(k, v);
+                for (Iterator<Object> ix = lst.iterator(); ix.hasNext(); ) {
+                    k.set(ix.next().toString());
+                    v.set(ix.next().toString());
+                    context.write(k, v);
+                }
             } catch (Exception e) {
                 throw new InterruptedException(e.toString());
             }
