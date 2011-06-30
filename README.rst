@@ -75,6 +75,26 @@ The reducer is given a key and all values that were associated with
 that key.  The reducer's function is to consolidate all of that into
 one output line.
 
+Input Paths (Optional)
+----------------------
+
+It's sometimes convenient to have the Clojure stub generate the input
+paths, instead of having them passed from the command line.  A
+function of "inputpaths", if found, will be passed the input filename
+passed on the command line, and is expected to return a list of input
+paths which will be passed to the map/reduce job.
+
+For example, given::
+
+    (defn inputpaths[s] (map #(str "basename" %) (split "," s)))
+
+If the job is invoked with (for example)::
+
+    hadoop jar shim.jar com.brool.Shim -files wordcount.clj a,b,c output-file
+
+The files "basenamea", "basenameb", and "basenamec" will all be
+concatenated and run through the map/reduce steps.
+
 Example
 -------
 
