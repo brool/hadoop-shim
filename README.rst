@@ -96,7 +96,7 @@ Invoking the job with (for example)::
     hadoop jar shim.jar com.brool.Shim -files wordcount.clj a,b,c output-file
 
 This will result in the files "basenamea", "basenameb", and
-"basenamec" will all be concatenated and run through the map/reduce
+"basenamec" all being concatenated and run through the map/reduce
 steps.  One possible use for this would be for defining a function
 that, given the low and high bounds, returns a list of all
 intermediate values -- we used a variant of this to query three months
