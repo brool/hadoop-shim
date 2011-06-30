@@ -22,7 +22,7 @@ import clojure.lang.RT;
 import clojure.lang.Var;
 
 public class Shim {
-    public static class Map extends Mapper<Object, Text, Text, Text> {
+    public static class ShimMapper extends Mapper<Object, Text, Text, Text> {
         private Text k = new Text();
         private Text v = new Text();
         private Var mapfn;
@@ -58,7 +58,7 @@ public class Shim {
         }
     } 
         
-    public static class Reduce extends Reducer<Text, Text, Text, Text> {
+    public static class ShimReducer extends Reducer<Text, Text, Text, Text> {
         private Text k = new Text();
         private Text v = new Text();
         private Var reducefn;
@@ -94,7 +94,7 @@ public class Shim {
             }
         }
     }
-        
+
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
         String [] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
@@ -102,29 +102,26 @@ public class Shim {
         // Clojure file is the first temp file
         String [] tmpFiles = conf.get("tmpfiles").split(",");
         String clojure_file = new File(tmpFiles[0]).getName();
-        Var inputPaths;
+        Var override;
 
         conf.set("clojure.file", clojure_file);
         clojure.lang.Compiler.loadFile(clojure_file);
 
-        inputPaths = RT.var("user", "inputpaths");
-
         Job job = new Job(conf, clojure_file);
         job.setJarByClass(Shim.class);
-        job.setMapperClass(Map.class);
-        job.setReducerClass(Reduce.class);
+        job.setMapperClass(ShimMapper.class);
+        job.setReducerClass(ShimReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
+        
+        override = RT.var("user", "init-job");
+        if (override.isBound()) 
+            override.invoke(job, otherArgs);
 
-        if (inputPaths.isBound()) {
-            java.util.List<Object> lst = (java.util.List<Object>) inputPaths.invoke(otherArgs[0]);
-            for (Iterator<Object> ix = lst.iterator(); ix.hasNext(); ) {
-                FileInputFormat.addInputPath(job, new Path(ix.next().toString()));
-            }
-        } else {
+        if (FileInputFormat.getInputPaths(job).length == 0)
             FileInputFormat.addInputPath(job, new Path(otherArgs[0]));
-        }
-        FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
+        if (FileOutputFormat.getOutputPath(job) == null)
+            FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 }

@@ -75,25 +75,39 @@ The reducer is given a key and all values that were associated with
 that key.  The reducer's function is to consolidate all of that into
 one output line.
 
-Input Paths (Optional)
-----------------------
+Overriding Defaults (Optional)
+------------------------------
 
-It's sometimes convenient to have the Clojure stub generate the input
-paths, instead of having them passed from the command line.  A
-function of "inputpaths", if found, will be passed the input filename
-passed on the command line, and is expected to return a list of input
-paths which will be passed to the map/reduce job.
+It's sometimes convenient to have the Clojure stub configure aspects
+of the job.  A function of "init-job", if found, will be passed the
+Job class and the extra arguments passed on the command line, and the
+Clojure stub can do any overrides as appropriate.
 
 For example, given::
 
-    (defn inputpaths[s] (map #(str "basename" %) (split "," s)))
+    (defn init-job [job args]
+      (FileInputFormat/addInputPaths job 
+        (apply str
+          (interpose "," 
+            (map #(str "basename" %) (.split (nth args 0) ","))))))
 
-If the job is invoked with (for example)::
+Invoking the job with (for example)::
 
     hadoop jar shim.jar com.brool.Shim -files wordcount.clj a,b,c output-file
 
-The files "basenamea", "basenameb", and "basenamec" will all be
-concatenated and run through the map/reduce steps.
+This will result in the files "basenamea", "basenameb", and
+"basenamec" will all be concatenated and run through the map/reduce
+steps.  One possible use for this would be for defining a function
+that, given the low and high bounds, returns a list of all
+intermediate values -- we used a variant of this to query three months
+of Hive tables in one 10-line script.
+
+As another example, let's say that you want to write a job that has
+sequence files as input (i.e., you're querying Hive), then all you
+need is::
+
+    (defn init-job [job args]
+        (.setInputFormatClass job SequenceFileInputFormat))
 
 Example
 -------
